@@ -54,11 +54,11 @@ void cargarSudokuDesdeArchivo(char* filename) {
 
 
 int validarFilas() {
-    omp_set_num_threads(9);
+    //omp_set_num_threads(9);
     int valido = 1;
     int i, j, k;
 
-    #pragma omp parallel for private(j, k) shared(valido)
+    #pragma omp parallel for schedule(dynamic) private(j, k) shared(valido)
     for (i = 0; i < SIZE; i++) {
         int contador[SIZE] = {0};
         for (j = 0; j < SIZE; j++) {
@@ -82,11 +82,11 @@ int validarFilas() {
 
 
 int validarColumnas() {
-    omp_set_num_threads(9);
+    //omp_set_num_threads(9);
     int valido = 1;
     int i, j, k;
 
-    #pragma omp parallel for private(i, k) shared(valido)
+    #pragma omp parallel for schedule(dynamic) private(i, k) shared(valido)
     for (j = 0; j < SIZE; j++) {
         int contador[SIZE] = {0};
         for (i = 0; i < SIZE; i++) {
@@ -163,7 +163,7 @@ int main(int argc, char* argv[]) {
     //  Validar subgrillas (3x3)
     int subgrillasValidas = 1;
 
-    #pragma omp parallel for collapse(2) shared(subgrillasValidas)
+    #pragma omp parallel for collapse(2) schedule(dynamic) shared(subgrillasValidas)
     for (int i = 0; i < SIZE; i += 3) {
         for (int j = 0; j < SIZE; j += 3) {
             if (!validarSubgrilla(i, j)) {
