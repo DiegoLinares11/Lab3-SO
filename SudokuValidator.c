@@ -54,6 +54,7 @@ void cargarSudokuDesdeArchivo(char* filename) {
 
 
 int validarFilas() {
+    omp_set_num_threads(9);
     int valido = 1;
     int i, j, k;
 
@@ -79,7 +80,9 @@ int validarFilas() {
 }
 
 
+
 int validarColumnas() {
+    omp_set_num_threads(9);
     int valido = 1;
     int i, j, k;
 
@@ -103,6 +106,7 @@ int validarColumnas() {
     }
     return valido;
 }
+
 
 
 
