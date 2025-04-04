@@ -8,6 +8,8 @@
 #include <pthread.h>
 #include <string.h>
 #include <sys/syscall.h>   // Para SYS_gettid
+#include <omp.h>
+
 
 #define SIZE 9
 
@@ -52,33 +54,57 @@ void cargarSudokuDesdeArchivo(char* filename) {
 
 
 int validarFilas() {
-    for (int i = 0; i < SIZE; i++) {
+    int valido = 1;
+    int i, j, k;
+
+    #pragma omp parallel for private(j, k) shared(valido)
+    for (i = 0; i < SIZE; i++) {
         int contador[SIZE] = {0};
-        for (int j = 0; j < SIZE; j++) {
+        for (j = 0; j < SIZE; j++) {
             int num = sudoku[i][j];
-            if (num < 1 || num > 9) return 0;
+            if (num < 1 || num > 9) {
+                valido = 0;
+                break;
+            }
             contador[num - 1]++;
         }
-        for (int k = 0; k < SIZE; k++) {
-            if (contador[k] != 1) return 0;
+        for (k = 0; k < SIZE; k++) {
+            if (contador[k] != 1) {
+                valido = 0;
+                break;
+            }
         }
     }
-    return 1;
+    return valido;
 }
+
+
 int validarColumnas() {
-    for (int j = 0; j < SIZE; j++) {
+    int valido = 1;
+    int i, j, k;
+
+    #pragma omp parallel for private(i, k) shared(valido)
+    for (j = 0; j < SIZE; j++) {
         int contador[SIZE] = {0};
-        for (int i = 0; i < SIZE; i++) {
+        for (i = 0; i < SIZE; i++) {
             int num = sudoku[i][j];
-            if (num < 1 || num > 9) return 0;
+            if (num < 1 || num > 9) {
+                valido = 0;
+                break;
+            }
             contador[num - 1]++;
         }
-        for (int k = 0; k < SIZE; k++) {
-            if (contador[k] != 1) return 0;
+        for (k = 0; k < SIZE; k++) {
+            if (contador[k] != 1) {
+                valido = 0;
+                break;
+            }
         }
     }
-    return 1;
+    return valido;
 }
+
+
 
 int validarSubgrilla(int filaInicio, int colInicio) {
     int contador[SIZE] = {0};
@@ -102,6 +128,7 @@ int main(int argc, char* argv[]) {
         printf("Uso: %s <archivo_sudoku>\n", argv[0]);
         return 1;
     }
+    omp_set_num_threads(1);
 
     // Leer sudoku
     cargarSudokuDesdeArchivo(argv[1]);
@@ -131,14 +158,16 @@ int main(int argc, char* argv[]) {
 
     //  Validar subgrillas (3x3)
     int subgrillasValidas = 1;
+
+    #pragma omp parallel for collapse(2) shared(subgrillasValidas)
     for (int i = 0; i < SIZE; i += 3) {
         for (int j = 0; j < SIZE; j += 3) {
             if (!validarSubgrilla(i, j)) {
                 subgrillasValidas = 0;
-                break;
             }
         }
     }
+
 
     // Resultado final
     if ((int)(size_t)resultado && filasValidas && subgrillasValidas) {
