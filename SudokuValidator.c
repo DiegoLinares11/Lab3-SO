@@ -54,7 +54,8 @@ void cargarSudokuDesdeArchivo(char* filename) {
 
 
 int validarFilas() {
-    //omp_set_num_threads(9);
+    omp_set_nested(1);
+    omp_set_num_threads(9);
     int valido = 1;
     int i, j, k;
 
@@ -82,7 +83,8 @@ int validarFilas() {
 
 
 int validarColumnas() {
-    //omp_set_num_threads(9);
+    omp_set_nested(1);
+    omp_set_num_threads(9);
     int valido = 1;
     int i, j, k;
 
@@ -133,7 +135,7 @@ int main(int argc, char* argv[]) {
         return 1;
     }
     omp_set_num_threads(1);
-
+    omp_set_nested(1);
     // Leer sudoku
     cargarSudokuDesdeArchivo(argv[1]);
 
