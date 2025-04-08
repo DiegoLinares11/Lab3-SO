@@ -10,7 +10,6 @@
 #include <sys/syscall.h>   // Para SYS_gettid
 #include <omp.h>
 
-
 #define SIZE 9
 
 int sudoku[SIZE][SIZE];
@@ -52,7 +51,6 @@ void cargarSudokuDesdeArchivo(char* filename) {
 }
 
 
-
 int validarFilas() {
     omp_set_nested(1);
     omp_set_num_threads(9);
@@ -81,7 +79,6 @@ int validarFilas() {
 }
 
 
-
 int validarColumnas() {
     omp_set_nested(1);
     omp_set_num_threads(9);
@@ -108,9 +105,6 @@ int validarColumnas() {
     }
     return valido;
 }
-
-
-
 
 int validarSubgrilla(int filaInicio, int colInicio) {
     int contador[SIZE] = {0};
